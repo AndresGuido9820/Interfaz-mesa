@@ -8,9 +8,9 @@ class Grafica(Frame):
     def __init__(self, master, *args):
         super().__init__(master, *args)
         
-        self.datos_arduino=comunicacion()# objeto que servirá para usar metodods de comunicación con arduino 
-        self.actualizar_puertos()
-        print(self.datos_arduino.puertos)
+        self.datos_arduino=comunicacion()# objeto tipo comunicacion para usar todos los metodos necesarios 
+        self.actualizar_puertos()# revisan los puertos que se pueden usar 
+        print(self.datos_arduino.puertos)# es para debuggear xdxd
         self.muestra=100
         self.datos=0.0
         
@@ -26,7 +26,7 @@ class Grafica(Frame):
         ax.spines['left'].set_color('red')
         ax.spines['right'].set_color('red')
         ax.spines['top'].set_color('red')
-        self.datos_señal1=collections.deque([0]*self.muestra, maxlen=self.muestra)
+        self.datos_señal1=collections.deque([0]*self.muestra, maxlen=self.muestra)# las deques que nos permitirán ver los datos e ir borrando los de atrás
         self.datos_señal2=collections.deque([0]*self.muestra, maxlen=self.muestra)
         self.widgets()
     
@@ -34,7 +34,7 @@ class Grafica(Frame):
         self.datos=(self.datos_arduino.datos_recibidos.get())
         dato=self.datos.split(",")
         dato1=float(dato[0])
-        datos2=float(dato[1])
+        datos2=float(dato[1])# se reciben dos datos 
         self.datos_señal1.append(dato1)
         self.datos_señal2.append(datos2)
         self.line.set_data(range(self.muestra), self.datos_señal1)
@@ -74,7 +74,7 @@ class Grafica(Frame):
         
         
         
-        self.canvas=FigureCanvasTkAgg(self.fig, master=frame)
+        self.canvas=FigureCanvasTkAgg(self.fig, master=frame)# colocar la grafica en el frame fig está instanciada en el  cosntructor 
         self.canvas.get_tk_widget().pack(padx=0,pady=0,expand=True, fill='both')
         
         self.bt_graficar=Button(frame4, text='graficar', font=( 'arial', 12, 'bold'), width=12, bg='pink', fg='black', command=self.iniciar)
