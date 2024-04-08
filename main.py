@@ -28,6 +28,21 @@ class Grafica(Frame):
         ax.spines['top'].set_color('red')
         self.datos_señal1=collections.deque([0]*self.muestra, maxlen=self.muestra)# las deques que nos permitirán ver los datos e ir borrando los de atrás
         self.datos_señal2=collections.deque([0]*self.muestra, maxlen=self.muestra)
+        #### Grafica dos 
+        self.fig2, ax2 = plt.subplots(facecolor="white", dpi=100, figsize=(4, 2))
+        plt.title("Grafica sismos", color="black", size=12, family='Arial')
+        ax2.tick_params(direction='out', length=5, width=2, color="black", grid_color='b', grid_alpha=0.5)
+        self.line3 = ax2.plot([], [], color='b', marker='o', linewidth=2, markersize=1, markeredgecolor='b')
+        plt.xlim(0, self.muestra)
+        plt.ylim(0, 10)
+        ax2.set_facecolor('white')
+        ax2.spines['bottom'].set_color("black")
+        ax2.spines['left'].set_color('black')
+        ax2.spines['right'].set_color('black')
+        ax2.spines['top'].set_color('black')
+        
+        
+        
         self.widgets()
     
     def animate(self, i):
@@ -53,7 +68,7 @@ class Grafica(Frame):
         self.bt_reanudar.config(state='disable')
     
     def widgets(self):
-        frame= Frame(self.master, bg='lavender', bd=2)
+        frame= Frame(self.master, bg='lavender')
         frame.grid(column=0, columnspan=2, row=0, sticky='nsew')
         frame1=Frame(self.master, bg='lavender')
         frame1.grid(column=2, row=0, sticky='nsew')
@@ -63,19 +78,31 @@ class Grafica(Frame):
         frame2.grid(column=1, row=1, sticky='nsew')
         frame3=Frame(self.master, bg='lavender')
         frame3.grid(column=2, row=1, sticky='nsew')
+        frame5=Frame(self.master, bg='lavender')
+        frame5.grid(column=3, row=0, columnspan=2, sticky='nsew')
+        frame6=Frame(self.master, bg='lavender')
+        frame6.grid(column=3,row=1, columnspan=2, sticky='nsew')
         
         
-        self.master.columnconfigure(0,weight=1)
-        self.master.columnconfigure(1,weight=1)
-        self.master.columnconfigure(2,weight=1)
         
-        self.master.rowconfigure(0,weight=5)
-        self.master.rowconfigure(1,weight=1)
+        
+        self.master.columnconfigure(0, weight=2)
+        self.master.columnconfigure(1, weight=2)
+        self.master.columnconfigure(2, weight=1)
+        self.master.columnconfigure(3, weight=2)  # Doble peso para las columnas 3 y 4
+        self.master.columnconfigure(4, weight=2)
+
+        self.master.rowconfigure(0, weight=1)
+        self.master.rowconfigure(1, weight=1)
+
+        
         
         
         
         self.canvas=FigureCanvasTkAgg(self.fig, master=frame)# colocar la grafica en el frame fig está instanciada en el  cosntructor 
         self.canvas.get_tk_widget().pack(padx=0,pady=0,expand=True, fill='both')
+        self.canvas2=FigureCanvasTkAgg(self.fig2,master=frame5)
+        self.canvas2.get_tk_widget().pack(padx=0,pady=0,expand=True, fill='both')
         
         self.bt_graficar=Button(frame4, text='graficar', font=( 'arial', 12, 'bold'), width=12, bg='pink', fg='black', command=self.iniciar)
         self.bt_graficar.pack(pady=5, expand=1)
@@ -113,6 +140,13 @@ class Grafica(Frame):
         self.combobox_port.pack(pady=0, expand=1)
         #self.combobox_port.current(0)
         Label(frame1,text='Braudates', bg='lavender', fg='VioletRed1', font=('Arial',12,'bold')).pack(pady=0,expand=1)
+        ### Trabajo de frame 6 
+        Label(frame6, text='Sismo', bg='lavender', fg='VioletRed1', font=('Arial',12, 'bold')).pack(side='top',anchor='nw', padx=5,pady=5)
+        self.combobox_sismos=ttk.Combobox(frame6, values=[1,2,3,4], justify='center', width=12, font='Arial' )### se cambiaran los valores por los registrados en las bases de datos 
+        self.combobox_sismos.pack(side='top',anchor='nw', padx=5,pady=5)
+        enviar_sismo=Button(frame6,text='Enviar',font=('arial', 12, 'bold'), width=15, bg='pink', fg='black')
+        enviar_sismo.pack(side="top", anchor="nw", padx=5, pady=5)
+        
         
         
     
@@ -136,6 +170,7 @@ class Grafica(Frame):
         
         self.bt_desconectar.pack(pady=5,expand=1)
         Label(frame3, image=self.logo, bg='black').pack(pady=5,expand=1)
+        
         
         
         
@@ -187,6 +222,35 @@ if __name__=="__main__":
     ventana.call('wm','iconphoto',ventana._w, PhotoImage(file='logo.png'))
     app=Grafica(ventana)
     app.mainloop()
+    
+    
+        
+        
+        
+        
+        
+         
+        
+        
+        
+        
+        
+        
+    
+    
+    
+        
+        
+        
+        
+        
+         
+        
+        
+        
+        
+        
+        
     
     
         
