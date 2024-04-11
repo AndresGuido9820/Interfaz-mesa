@@ -4,6 +4,11 @@ import matplotlib.pyplot as plt
 import matplotlib. animation as animation 
 from Comunicacion import comunicacion
 import collections
+from señales import leer_archivo
+import os
+# datos archivo 
+ruta_carpeta='D:\Desktop\Interfaz-mesa\Archivos_sismos'
+archivos = os.listdir(ruta_carpeta)
 class Grafica(Frame):
     def __init__(self, master, *args):
         super().__init__(master, *args)
@@ -13,6 +18,8 @@ class Grafica(Frame):
         print(self.datos_arduino.puertos)# es para debuggear xdxd
         self.muestra=100
         self.datos=0.0
+        self.aceleracion=10# se inicializan las variables de las base de datos aceleracion y tiempo 
+        self.tiempo=100
         
         self.fig,ax= plt.subplots(facecolor="#FF69B4", dpi=100, figsize=(4,2))
         plt.title("grafica desplazamiento vs tiempo ", color="white", size=12, family='Arial')
@@ -20,7 +27,7 @@ class Grafica(Frame):
         self.line=ax.plot([],[], color='m', marker= 'o', linewidth=12, markersize=1, markeredgecolor='m')
         self.line2= ax.plot([],[], color='g', marker= 'o', linewidth=2, markersize=1, markeredgecolor='g')
         plt.xlim(0, self.muestra)
-        plt.ylim(0, 10)
+        plt.ylim(0,10)
         ax.set_facecolor('#6E6D7000')
         ax.spines['bottom'].set_color("red")
         ax.spines['left'].set_color('red')
@@ -29,17 +36,17 @@ class Grafica(Frame):
         self.datos_señal1=collections.deque([0]*self.muestra, maxlen=self.muestra)# las deques que nos permitirán ver los datos e ir borrando los de atrás
         self.datos_señal2=collections.deque([0]*self.muestra, maxlen=self.muestra)
         #### Grafica dos 
-        self.fig2, ax2 = plt.subplots(facecolor="white", dpi=100, figsize=(4, 2))
+        self.fig2, self.ax2 = plt.subplots(facecolor="white", dpi=100, figsize=(4, 2))
         plt.title("Grafica sismos", color="black", size=12, family='Arial')
-        ax2.tick_params(direction='out', length=5, width=2, color="black", grid_color='b', grid_alpha=0.5)
-        self.line3 = ax2.plot([], [], color='b', marker='o', linewidth=2, markersize=1, markeredgecolor='b')
-        plt.xlim(0, self.muestra)
-        plt.ylim(0, 10)
-        ax2.set_facecolor('white')
-        ax2.spines['bottom'].set_color("black")
-        ax2.spines['left'].set_color('black')
-        ax2.spines['right'].set_color('black')
-        ax2.spines['top'].set_color('black')
+        self.ax2.tick_params(direction='out', length=5, width=2, color="black", grid_color='b', grid_alpha=0.5)
+        self.line3 = self.ax2.plot([], [], color='b', marker='o', linewidth=2, markersize=1, markeredgecolor='b')
+        plt.xlim(0, self.tiempo)
+        plt.ylim(0, self.aceleracion)
+        self.ax2.set_facecolor('white')
+        self.ax2.spines['bottom'].set_color("black")
+        self.ax2.spines['left'].set_color('black')
+        self.ax2.spines['right'].set_color('black')
+        self.ax2.spines['top'].set_color('black')
         
         
         
@@ -142,9 +149,11 @@ class Grafica(Frame):
         Label(frame1,text='Braudates', bg='lavender', fg='VioletRed1', font=('Arial',12,'bold')).pack(pady=0,expand=1)
         ### Trabajo de frame 6 
         Label(frame6, text='Sismo', bg='lavender', fg='VioletRed1', font=('Arial',12, 'bold')).pack(side='top',anchor='nw', padx=5,pady=5)
-        self.combobox_sismos=ttk.Combobox(frame6, values=[1,2,3,4], justify='center', width=12, font='Arial' )### se cambiaran los valores por los registrados en las bases de datos 
+        self.combobox_sismos=ttk.Combobox(frame6, values=archivos, justify='center', width=12, font='Arial' )### se cambiaran los valores por los registrados en las bases de datos 
+        
         self.combobox_sismos.pack(side='top',anchor='nw', padx=5,pady=5)
-        enviar_sismo=Button(frame6,text='Enviar',font=('arial', 12, 'bold'), width=15, bg='pink', fg='black')
+        
+        enviar_sismo=Button(frame6,text='Enviar',font=('arial', 12, 'bold'), width=15, bg='pink', fg='black', command=self.actualizar_grafica2)
         enviar_sismo.pack(side="top", anchor="nw", padx=5, pady=5)
         
         
@@ -211,6 +220,22 @@ class Grafica(Frame):
     def dato_velocidad(self):
         velocidad = '2' + self.velocidad_entry.get()
         self.datos_arduino.enviar_datos(velocidad)
+        
+    def actualizar_grafica2(self):
+        
+        aceleracion, tiempo = leer_archivo(self.combobox_sismos.get())
+        print(aceleracion)
+        print(tiempo)
+        
+        if aceleracion is not None and tiempo is not None:
+        
+            
+            
+            self.line3[0].set_data(tiempo,aceleracion )
+            self.ax2.set_xlim(0, max(tiempo))
+            self.ax2.set_ylim(0, max(aceleracion))
+            self.canvas2.draw()
+        
 
 
 if __name__=="__main__":
