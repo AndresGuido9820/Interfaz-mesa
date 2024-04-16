@@ -226,6 +226,7 @@ class Grafica(Frame):
         aceleracion, tiempo = leer_archivo(self.combobox_sismos.get())
         print(aceleracion)
         print(tiempo)
+       
         
         if aceleracion is not None and tiempo is not None:
         
@@ -233,7 +234,7 @@ class Grafica(Frame):
             
             self.line3[0].set_data(tiempo,aceleracion )
             self.ax2.set_xlim(0, max(tiempo))
-            self.ax2.set_ylim(0, max(aceleracion))
+            self.ax2.set_ylim(min(aceleracion), max(aceleracion))
             self.canvas2.draw()
         
 
